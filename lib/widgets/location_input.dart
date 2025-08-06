@@ -3,8 +3,6 @@ import 'package:favorite_places_app/model/place.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:location/location.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong.dart';
 
 class LocationInput extends StatefulWidget {
   const LocationInput({super.key, required this.onSelectLocation});
@@ -93,7 +91,8 @@ class _LocationInputState extends State<LocationInput> {
         locationImage,
         fit: BoxFit.cover,
         width: double.infinity,
-        height: double.infinity,
+        height: 170,
+        // height: double.infinity,
       );
     }
     if (_isGettingLocation) {
