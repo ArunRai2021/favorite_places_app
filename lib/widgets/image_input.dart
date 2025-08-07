@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class ImageInput extends StatefulWidget {
   const ImageInput({super.key, required this.onPickedImage});
@@ -15,18 +16,37 @@ class _ImageInputState extends State<ImageInput> {
   File? _selectedImage;
 
   void _takePicture() async {
-    final imagePicker = ImagePicker();
-    final pickedImage = await imagePicker.pickImage(
-      source: ImageSource.camera,
-      maxHeight: 600,
-    );
-    if (pickedImage == null) {
-      return;
+    try {
+      // ✅ Step 1: Request camera permission
+      final status = await Permission.camera.request();
+      if (!status.isGranted) {
+        // You can show a dialog/snackbar here
+        return;
+      }
+      // ✅ Step 2: Open image picker
+      final imagePicker = ImagePicker();
+      final pickedImage = await imagePicker.pickImage(
+        source: ImageSource.camera,
+        maxHeight: 600,
+      );
+
+      if (pickedImage == null) {
+        return;
+      }
+
+      setState(() {
+        _selectedImage = File(pickedImage.path);
+      });
+
+      widget.onPickedImage(_selectedImage!);
+    } catch (e) {
+      debugPrint('Camera Crash Error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Something went wrong while opening the camera.'),
+        ),
+      );
     }
-    setState(() {
-      _selectedImage = File(pickedImage.path);
-    });
-    widget.onPickedImage(_selectedImage!);
   }
 
   @override
